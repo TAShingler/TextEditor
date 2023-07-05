@@ -4,20 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TextEditor"
+        xmlns:convert="clr-namespace:TextEditor.Converters"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="488" 
         Width="800" 
         WindowState="Normal"
-        StateChanged="Window_StateChanged" 
+        StateChanged="Window_StateChanged"
+        DataContext="{RelativeSource Self}"
         Foreground="{DynamicResource AppTextColor}" 
         Background="{DynamicResource AppPrimaryColor}">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="29" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+        <WindowChrome CaptionHeight="29" ResizeBorderThickness="5" />
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
+        <!-- Converters -->
+        <convert:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        
         <Style x:Key="TitleBarButtonStyle"
                TargetType="Button">
             <Setter Property="Foreground"
@@ -613,8 +618,7 @@
         </ControlTemplate>
 
         <!-- ScrollBar Style -->
-        <Style x:Key="{x:Type ScrollBar}"
-               TargetType="{x:Type ScrollBar}">
+        <Style TargetType="{x:Type ScrollBar}">
             <Setter Property="SnapsToDevicePixels"
                     Value="True" />
             <Setter Property="OverridesDefaultStyle"
@@ -641,6 +645,119 @@
                             Value="{StaticResource VerticalScrollBar}" />
                 </Trigger>
             </Style.Triggers>
+        </Style>
+        
+        <!-- ScrollViewer Style -->
+        <Style x:Key="RightScrollViewer"
+               TargetType="{x:Type ScrollViewer}">
+            <Setter Property="OverridesDefaultStyle"
+                    Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0"
+                                    Grid.Column="0"
+                                    Margin="{TemplateBinding Margin}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}" />
+                            </Border>
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                       Grid.Row="0"
+                                       Grid.Column="1"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                       Orientation="Horizontal"
+                                       Grid.Row="1"
+                                       Grid.Column="0"
+                                       Value="{TemplateBinding HorizontalOffset}"
+                                       Maximum="{TemplateBinding ScrollableWidth}"
+                                       ViewportSize="{TemplateBinding ViewportWidth}"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" IsVisibleChanged="PART_HorizontalScrollBar_IsVisibleChanged"/>
+                            <Border Grid.Row="1"
+                                    Grid.Column="1"
+                                    Background="{DynamicResource AppSecondaryColor}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="NumberedLineTextBoxStyle"
+               TargetType="{x:Type TextBox}">
+            <Setter Property="SnapsToDevicePixels"
+                    Value="True" />
+            <Setter Property="OverridesDefaultStyle"
+                    Value="True" />
+            <Setter Property="KeyboardNavigation.TabNavigation"
+                    Value="None" />
+            <Setter Property="FocusVisualStyle"
+                    Value="{x:Null}" />
+            <Setter Property="MinWidth"
+                    Value="120" />
+            <Setter Property="MinHeight"
+                    Value="20" />
+            <Setter Property="AllowDrop"
+                    Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                        <Border Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Disabled">
+                                            <!--<Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                <EasingColorKeyFrame KeyTime="0"
+                                         Value="{StaticResource DisabledControlLightColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>-->
+                                        </VisualState>
+                                        <VisualState x:Name="ReadOnly">
+                                            <!--<Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                <EasingColorKeyFrame KeyTime="0"
+                                         Value="{StaticResource DisabledControlDarkColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>-->
+                                        </VisualState>
+                                        <VisualState x:Name="MouseOver" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="0"
+                                          Padding="2"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
+                                          HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                                          Style="{StaticResource RightScrollViewer}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style x:Key="WindowMainPanelStyle"
@@ -725,6 +842,7 @@
 
     <Border Style="{StaticResource WindowMainPanelStyle}">
         <DockPanel LastChildFill="True">
+            <!-- Title Bar -->
             <Grid x:Name="titleBarAndMenu"
                   DockPanel.Dock="Top"
                   Height="32">
@@ -975,6 +1093,7 @@
                 </Button>
             </Grid>
             
+            <!-- Status Bar -->
             <StatusBar x:Name="statusBar"
                        DockPanel.Dock="Bottom"
                        Height="24"
@@ -1027,6 +1146,7 @@
                        VerticalContentAlignment="Center" />
             </StatusBar>
             
+            <!-- Body Contents -->
             <Grid ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <!--MIGHT MAKE GRID - DEPENDS-->
@@ -1036,30 +1156,32 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid x:Name="lineNumsGrid"
-                      Visibility="Collapsed">
+                      Grid.Column="0"
+                      Visibility="{Binding ElementName=menuItemLineNums,
+                                           Path=IsChecked,
+                                           Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     
-                    <TextBox Grid.Column="0" 
-                        x:Name="txtBlockLineNums"
-                        MinWidth="40"
-                        TextAlignment="Right"
-                        Foreground="#FF2B91AF"
-                        Background="{StaticResource AppPrimaryColorAlt}"
-                        Padding="5,0" 
-                        BorderThickness="0,0,0,0"
-                        IsReadOnly="True" 
-                        Cursor="Arrow" 
-                        Visibility="Visible"
-                        MouseEnter="txtBlockLineNums_MouseEnter" 
-                        MouseLeave="txtBlockLineNums_MouseLeave" />
+                    <TextBox Grid.Row="0" 
+                             x:Name="txtBlockLineNums"
+                             MinWidth="40"
+                             TextAlignment="Right"
+                             Foreground="#FF2B91AF"
+                             Background="{StaticResource AppPrimaryColorAlt}"
+                             Padding="5,0" 
+                             BorderThickness="0,0,0,0"
+                             IsReadOnly="True" 
+                             Cursor="Arrow" 
+                             Visibility="Visible"
+                             MouseEnter="txtBlockLineNums_MouseEnter" 
+                             MouseLeave="txtBlockLineNums_MouseLeave" />
                     <TextBlock x:Name="lineNumsScrollBarNull" 
                                Grid.Row="1" 
                                Height="18"
-                               Background="{DynamicResource AppSecondaryColor}"
-                               Visibility="{Binding ElementName=txtBoxEditor, Path=HorizontalScrollBarVisibility}"/>
+                               Background="{DynamicResource AppSecondaryColor}"/>
                 </Grid>
                 <TextBox Grid.Column="1"
                          x:Name="txtBoxEditor" 
@@ -1074,7 +1196,8 @@
                          TextChanged="SetUpLines"
                          Padding="2" 
                          Cursor="IBeam"
-                         TextWrapping="NoWrap">
+                         TextWrapping="Wrap"
+                         Style="{DynamicResource NumberedLineTextBoxStyle}" SelectionChanged="txtBoxEditor_SelectionChanged">
                     <TextBox.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
                                          Color="#FF333333" />

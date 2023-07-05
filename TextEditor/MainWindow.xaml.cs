@@ -24,7 +24,14 @@ namespace TextEditor {
     public partial class MainWindow : Window {
         //private readonly Cursor mirroredArrow = new("C:\\COMT\\PersonalProjects\\TextEditor\\TextEditor\\MirroredArrow.cur");
         private readonly Cursor mirroredArrow = new(@"D:\COMT\PersonalProjects\TextEditor\TextEditor\MirroredArrow.cur");
+        private Visibility _lineNumbersVisibility = Visibility.Collapsed;
+        private Stack<Action> undoStack = new Stack<Action>();
+        private Stack<Action> redoStack = new Stack<Action>();
 
+        public Visibility LineNumbersVisibility {
+            get { return _lineNumbersVisibility; }
+            set { _lineNumbersVisibility = value; }
+        }
 
         public MainWindow() {
             InitializeComponent();
@@ -170,7 +177,13 @@ namespace TextEditor {
         }
 
         private void TextBox_ScrollChanged(object sender, ScrollChangedEventArgs e) {
+            Debug.WriteLine(((TextBox)sender).Name);
             txtBlockLineNums.ScrollToVerticalOffset(txtBoxEditor.VerticalOffset);
+            //Debug.WriteLine("TextBox_ScrollChanged sender = " + sender.ToString());
+            //Debug.WriteLine("TextBox_ScrollChanged sender type = " + sender.GetType());
+
+            //TextBox lineNumsTextBox = (TextBox)((TextBox)sender).Template.FindName("txtBlockLineNums",((TextBox)sender));
+            //lineNumsTextBox.ScrollToVerticalOffset(((TextBox)sender).VerticalOffset);
         }
 
         private void SetUpLines(object sender, TextChangedEventArgs e) {
@@ -186,12 +199,14 @@ namespace TextEditor {
         }
 
         private void MenuItemLineNums_Checked(object sender, RoutedEventArgs e) {
-            lineNumsGrid.Visibility = Visibility.Visible;
+            //lineNumsGrid.Visibility = Visibility.Visible;
+            //LineNumbersVisibility = Visibility.Visible;
             //txtBoxEditor.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;   // will need to be changed later -- do not belong in this method
         }
 
         private void menuItemLineNums_Unchecked(object sender, RoutedEventArgs e) {
-            lineNumsGrid.Visibility = Visibility.Collapsed;
+            //lineNumsGrid.Visibility = Visibility.Collapsed;
+            //LineNumbersVisibility = Visibility.Collapsed;
             //txtBoxEditor.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;   // will need to be changed later -- do not belong in this method
         }
 
@@ -257,11 +272,11 @@ namespace TextEditor {
         }
 
         private void MenuItemUndo_Click(object sender, RoutedEventArgs e) {
-
+            ApplicationCommands.Undo.Execute(new(), Owner); //prob. gonna use stacks though...
         }
 
         private void menuItemRedo_Click(object sender, RoutedEventArgs e) {
-
+            ApplicationCommands.Redo.Execute(new(), Owner); //prob. gonna use stacks though...
         }
 
         private void menuItemCut_Click(object sender, RoutedEventArgs e) {
@@ -363,6 +378,33 @@ namespace TextEditor {
 
         private void menuItemAbout_Click(object sender, RoutedEventArgs e) {
 
+        }
+
+        private void PART_HorizontalScrollBar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            if (e.NewValue.Equals(true)) {
+                lineNumsScrollBarNull.Visibility = Visibility.Visible;
+            }
+
+            if (e.NewValue.Equals(false)) {
+                lineNumsScrollBarNull.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void txtBoxEditor_SelectionChanged(object sender, RoutedEventArgs e) {
+            //Debug.WriteLine("txtBoxEditor_SelectionChanged called...\ntxtBoxEditor.CaretIndex = " + txtBoxEditor.CaretIndex);
+
+            int caretVerticalPosition = 0, caretHorizontalPosition = txtBoxEditor.CaretIndex;
+
+            //get vertical position
+            var textBoxSubstring = txtBoxEditor.Text.Substring(0, txtBoxEditor.CaretIndex);
+            var textLines = textBoxSubstring.Split("\n");
+
+            caretVerticalPosition = textLines.Length;
+
+            //get horizontal position
+            caretHorizontalPosition = textLines[textLines.Length - 1].Length;
+
+            statusBarLabelCaretPos.Content = $"LN: {caretVerticalPosition}  Ch: {caretHorizontalPosition + 1}";
         }
     }
 }
