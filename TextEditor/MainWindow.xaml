@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TextEditor"
         xmlns:convert="clr-namespace:TextEditor.Converters"
+        xmlns:vm="clr-namespace:TextEditor.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="488" 
@@ -13,16 +14,20 @@
         StateChanged="Window_StateChanged"
         DataContext="{RelativeSource Self}"
         Foreground="{DynamicResource AppTextColor}" 
-        Background="{DynamicResource AppPrimaryColor}">
+        Background="{DynamicResource AppPrimaryColor}" Loaded="Window_Loaded">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="29" ResizeBorderThickness="5" />
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
+        <!-- Data Templates -->
+        <!--<DataTemplate DataType="{x:Type vm:MainWindow_ViewModel}" />-->
+
         <!-- Converters -->
         <convert:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        
+        <convert:BoolToTextWrappingConverter x:Key="BoolToTextWrappingConverter" />
+
         <Style x:Key="TitleBarButtonStyle"
                TargetType="Button">
             <Setter Property="Foreground"
@@ -1164,7 +1169,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <TextBox Grid.Row="0" 
                              x:Name="txtBlockLineNums"
                              MinWidth="40"
@@ -1174,7 +1179,7 @@
                              Padding="5,0" 
                              BorderThickness="0,0,0,0"
                              IsReadOnly="True" 
-                             Cursor="Arrow" 
+                             Cursor="Resources\MirroredArrow.cur"
                              Visibility="Visible"
                              MouseEnter="txtBlockLineNums_MouseEnter" 
                              MouseLeave="txtBlockLineNums_MouseLeave" />
@@ -1195,7 +1200,6 @@
                          BorderThickness="0,0,0,0" 
                          TextChanged="SetUpLines"
                          Padding="2" 
-                         Cursor="IBeam"
                          TextWrapping="Wrap"
                          Style="{DynamicResource NumberedLineTextBoxStyle}" SelectionChanged="txtBoxEditor_SelectionChanged">
                     <TextBox.Resources>

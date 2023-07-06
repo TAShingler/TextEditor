@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
 
 namespace TextEditor {
@@ -20,5 +21,24 @@ namespace TextEditor {
         public MainWindowTemplate() {
             InitializeComponent();
         }
+
+        //private void SetUpLines(string data) {
+        //    int noLines = string.IsNullOrEmpty(data) ? 0 : data.Split('\n').Length;
+        //    StringBuilder sb = new StringBuilder();
+        //    for (int i = 1; i <= noLines; i++) {
+        //        sb.AppendLine(i.ToString());
+        //    }
+
+        //    TextBoxLineNumbers.Text = sb.ToString();
+        //    TextBoxResult.Text = data ?? "";
+        //}
+
+        //private void TextBox_ScrollChanged(object sender, ScrollChangedEventArgs e) {
+        //    TextBoxLineNumbers.ScrollToVerticalOffset(TextBoxResult.VerticalOffset);
+
+        //    SetUpLines(TextBoxResult.Text);
+        //}
+
+        
     }
 }

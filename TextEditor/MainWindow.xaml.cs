@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -23,7 +25,7 @@ namespace TextEditor {
     /// </summary>
     public partial class MainWindow : Window {
         //private readonly Cursor mirroredArrow = new("C:\\COMT\\PersonalProjects\\TextEditor\\TextEditor\\MirroredArrow.cur");
-        private readonly Cursor mirroredArrow = new(@"D:\COMT\PersonalProjects\TextEditor\TextEditor\MirroredArrow.cur");
+        //private readonly Cursor mirroredArrow = new(@"D:\COMT\PersonalProjects\TextEditor\TextEditor\MirroredArrow.cur");
         private Visibility _lineNumbersVisibility = Visibility.Collapsed;
         private Stack<Action> undoStack = new Stack<Action>();
         private Stack<Action> redoStack = new Stack<Action>();
@@ -166,9 +168,9 @@ namespace TextEditor {
         //}
 
         private void SetUpLines(string data) {  // needs revised - not working properly
-            int noLines = string.IsNullOrEmpty(data) ? 1 : data.Split('\n').Length;
+            //int noLines = string.IsNullOrEmpty(data) ? 1 : data.Split('\n').Length;
             StringBuilder sb = new StringBuilder();
-            for (int i = 1; i <= noLines; i++) {
+            for (int i = 1; i <= txtBoxEditor.LineCount; i++) { //noLines; i++) {
                 sb.AppendLine(i.ToString());
             }
 
@@ -191,11 +193,11 @@ namespace TextEditor {
         }
 
         private void txtBlockLineNums_MouseEnter(object sender, MouseEventArgs e) {
-            txtBlockLineNums.Cursor = mirroredArrow;
+            //txtBlockLineNums.Cursor = mirroredArrow;
         }
 
         private void txtBlockLineNums_MouseLeave(object sender, MouseEventArgs e) {
-            txtBlockLineNums.Cursor = Cursors.Arrow;
+            //txtBlockLineNums.Cursor = Cursors.Arrow;
         }
 
         private void MenuItemLineNums_Checked(object sender, RoutedEventArgs e) {
@@ -237,6 +239,9 @@ namespace TextEditor {
         }
 
         private void SaveFile() {
+            //see if file exists
+
+            //try to save to file
 
         }
 
@@ -328,11 +333,11 @@ namespace TextEditor {
         }
 
         private void menuItemWordWrap_Checked(object sender, RoutedEventArgs e) {
-
+            txtBoxEditor.TextWrapping = TextWrapping.Wrap;
         }
 
         private void menuItemWordWrap_Unchecked(object sender, RoutedEventArgs e) {
-
+            txtBoxEditor.TextWrapping = TextWrapping.NoWrap;
         }
 
         private void menuItemFont_Click(object sender, RoutedEventArgs e) {
@@ -377,7 +382,77 @@ namespace TextEditor {
         }
 
         private void menuItemAbout_Click(object sender, RoutedEventArgs e) {
+            var textEditorText = txtBoxEditor.Text;
+            var textEditorLines = textEditorText.Split('\n');
 
+            int WrappedLines1 = txtBoxEditor.GetLineIndexFromCharacterIndex(txtBoxEditor.Text.Length) + 1;
+            int WrappedLines2 = txtBoxEditor.LineCount;
+            int LineFeedsCount = txtBoxEditor.Text.Split(new[] { "\r" }, StringSplitOptions.None).Count();
+
+            Debug.WriteLine("WrappedLines1 = " + WrappedLines1);
+            Debug.WriteLine("WrappedLines2 = " + WrappedLines1);
+            Debug.WriteLine("LineFeedsCount = " + LineFeedsCount);
+
+            txtBoxEditor.TextWrapping = TextWrapping.NoWrap;
+            LineFeedsCount = txtBoxEditor.LineCount;
+
+            Debug.WriteLine("LineFeedsCount = " + LineFeedsCount);
+
+            ////TextBox t = (TextBox)sender;
+            //var count = txtBoxEditor.LineCount; // wrong;
+            //                                    // or
+            //var lines = txtBoxEditor.Text.Split(new[] { '\n', '\r' });
+            //var lineCount = lines.Length;
+
+            //Debug.WriteLine("count = " + count);
+            //Debug.WriteLine("lineCount = " + lineCount);
+
+            //System.Drawing.Font f = new System.Drawing.Font(txtBoxEditor.FontFamily.Source, (float)txtBoxEditor.FontSize);
+
+            //for (int i = 0; i < textEditorLines.Length; i++) {
+            //    System.Diagnostics.Debug.WriteLine("Line " + (i+1) + " in textEditorLines text height: " + System.Windows.Forms.TextRenderer.MeasureText(textEditorLines[i], f).Height);
+            //}
+
+            //foreach( var line in textEditorLines ) {
+            //    var lineParts = line.Split('\r');
+            //    Debug.WriteLine("linePArts length = " + lineParts.Length);
+            //    //Debug.WriteLine(txtBoxEditor.d);
+
+            //    foreach () {
+            //        Debug.Write(part + "        ");
+            //    }
+
+            //    Debug.WriteLine("");
+            //}
+
+            //Debug.WriteLine("" + txtBoxEditor.ViewportWidth);
+            //for (int i=0;i<txtBoxEditor.LineCount;i++) {
+            //    Debug.WriteLine($"line {i+1} length = " + txtBoxEditor.GetLineLength(i));
+            //    string lineText = txtBoxEditor.GetLineText(i);
+            //    if (lineText.Length >= 3) {
+            //        string nextToLast = lineText.ElementAt(lineText.Length - 2).ToString();
+            //        string lastChar = lineText.ElementAt(lineText.Length - 1).ToString();
+            //        Debug.WriteLine($"line {i + 1} text = " + lineText + @nextToLast + @lastChar);
+            //    } else {
+            //        Debug.WriteLine($"line {i + 1} text = " + lineText);
+            //    }
+            //}
+
+            //// Set up string. 
+            //string measureString = "Measure String";
+            //Font stringFont = new Font("Arial", 16);
+
+            //// Measure string.
+            //SizeF stringSize = new SizeF();
+            //stringSize = e.Graphics.MeasureString(measureString, stringFont);
+
+            //// Draw rectangle representing size of string.
+            //e.Graphics.DrawRectangle(new Pen(Color.Red, 1), 0.0F, 0.0F, stringSize.Width, stringSize.Height);
+
+            //// Draw string to screen.
+            //e.Graphics.DrawString(measureString, stringFont, Brushes.Black, new PointF(0, 0));
+
+            //txtBoxEditor.Text = "fdsa\rfdsa\rfdsa\rfdsa\rfdsa\rfdsa\rfdsa\rfdsa";
         }
 
         private void PART_HorizontalScrollBar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
@@ -405,6 +480,10 @@ namespace TextEditor {
             caretHorizontalPosition = textLines[textLines.Length - 1].Length;
 
             statusBarLabelCaretPos.Content = $"LN: {caretVerticalPosition}  Ch: {caretHorizontalPosition + 1}";
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            SetUpLines(txtBoxEditor.Text);
         }
     }
 }
