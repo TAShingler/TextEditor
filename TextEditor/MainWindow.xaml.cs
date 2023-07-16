@@ -168,19 +168,60 @@ namespace TextEditor {
         //}
 
         private void SetUpLines(string data) {  // needs revised - not working properly
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             //int noLines = string.IsNullOrEmpty(data) ? 1 : data.Split('\n').Length;
             StringBuilder sb = new StringBuilder();
-            for (int i = 1; i <= txtBoxEditor.LineCount; i++) { //noLines; i++) {
-                sb.AppendLine(i.ToString());
+            //for (int i = 1; i <= txtBoxEditor.LineCount; i++) { //noLines; i++) {
+            //    sb.AppendLine(i.ToString());
+            //}
+
+            //txtBlockLineNums.Text = sb.ToString();
+            //txtBoxEditor.Text = data ?? "";
+
+
+            if (txtBoxEditor.Text.Length <= 0) {
+                txtBlockLineNums.Clear();
+                txtBlockLineNums.Text = "1";
+                return;
             }
 
+            var txtBoxText = txtBoxEditor.Text;
+            var txtBoxTextLines = txtBoxEditor.Text.Split('\n');
+
+            int currentLineCharIndex = 0;
+            string textToCurrentLineCharIndex = string.Empty;
+            //var firstVisibleLineIndex = txtBoxEditor.GetFirstVisibleLineIndex();
+            //var lastVisibleLineIndex = txtBoxEditor.GetLastVisibleLineIndex();
+
+            List<string> lineNums = new();
+            for (int i = 0; i < txtBoxEditor.LineCount; i++) {// firstVisibleLineIndex; i <= lastVisibleLineIndex; i++) {
+                currentLineCharIndex = txtBoxEditor.GetCharacterIndexFromLineIndex(i);
+                textToCurrentLineCharIndex = txtBoxText.Substring(0, currentLineCharIndex);
+                var lines = textToCurrentLineCharIndex.Split('\n');
+
+                if (lineNums.Contains(lines.Length.ToString()) == false)
+                    lineNums.Add(lines.Length.ToString());
+                else
+                    lineNums.Add(string.Empty);
+            }
+
+            for (int i=0; i<lineNums.Count; i++) {
+                if (i == lineNums.Count - 1)
+                    sb.Append(lineNums[i]);
+                else
+                    sb.Append(lineNums[i] + '\n');
+            }
             txtBlockLineNums.Text = sb.ToString();
-            txtBoxEditor.Text = data ?? "";
+
+            sw.Start();
+            Debug.WriteLine("Stopwatch in milliseconds/seconds = " + sw.ElapsedMilliseconds + "/" + Convert.ToDouble(sw.ElapsedMilliseconds / 1000));
         }
 
         private void TextBox_ScrollChanged(object sender, ScrollChangedEventArgs e) {
             Debug.WriteLine(((TextBox)sender).Name);
             txtBlockLineNums.ScrollToVerticalOffset(txtBoxEditor.VerticalOffset);
+            //SetUpLines(txtBoxEditor.Text);
             //Debug.WriteLine("TextBox_ScrollChanged sender = " + sender.ToString());
             //Debug.WriteLine("TextBox_ScrollChanged sender type = " + sender.GetType());
 
@@ -334,10 +375,12 @@ namespace TextEditor {
 
         private void menuItemWordWrap_Checked(object sender, RoutedEventArgs e) {
             txtBoxEditor.TextWrapping = TextWrapping.Wrap;
+            SetUpLines(txtBoxEditor.Text);
         }
 
         private void menuItemWordWrap_Unchecked(object sender, RoutedEventArgs e) {
             txtBoxEditor.TextWrapping = TextWrapping.NoWrap;
+            SetUpLines(txtBoxEditor.Text);
         }
 
         private void menuItemFont_Click(object sender, RoutedEventArgs e) {
@@ -385,75 +428,169 @@ namespace TextEditor {
             var textEditorText = txtBoxEditor.Text;
             var textEditorLines = textEditorText.Split('\n');
 
-            int WrappedLines1 = txtBoxEditor.GetLineIndexFromCharacterIndex(txtBoxEditor.Text.Length) + 1;
-            int WrappedLines2 = txtBoxEditor.LineCount;
-            int LineFeedsCount = txtBoxEditor.Text.Split(new[] { "\r" }, StringSplitOptions.None).Count();
+            //int WrappedLines1 = txtBoxEditor.GetLineIndexFromCharacterIndex(txtBoxEditor.Text.Length) + 1;
+            //int WrappedLines2 = txtBoxEditor.LineCount;
+            //int LineFeedsCount = txtBoxEditor.Text.Split(new[] { "\r" }, StringSplitOptions.None).Count();
 
-            Debug.WriteLine("WrappedLines1 = " + WrappedLines1);
-            Debug.WriteLine("WrappedLines2 = " + WrappedLines1);
-            Debug.WriteLine("LineFeedsCount = " + LineFeedsCount);
+            //Debug.WriteLine("WrappedLines1 = " + WrappedLines1);
+            //Debug.WriteLine("WrappedLines2 = " + WrappedLines1);
+            //Debug.WriteLine("LineFeedsCount = " + LineFeedsCount);
 
-            txtBoxEditor.TextWrapping = TextWrapping.NoWrap;
-            LineFeedsCount = txtBoxEditor.LineCount;
+            //txtBoxEditor.TextWrapping = TextWrapping.NoWrap;
+            //LineFeedsCount = txtBoxEditor.LineCount;
 
-            Debug.WriteLine("LineFeedsCount = " + LineFeedsCount);
+            //Debug.WriteLine("LineFeedsCount = " + LineFeedsCount);
 
-            ////TextBox t = (TextBox)sender;
-            //var count = txtBoxEditor.LineCount; // wrong;
-            //                                    // or
-            //var lines = txtBoxEditor.Text.Split(new[] { '\n', '\r' });
-            //var lineCount = lines.Length;
+            //int truelineCount = 0;
+            //Debug.WriteLine($"textEditorLines.Length = {textEditorLines.Length}");
+            //Debug.WriteLine($"txtBoxEditor.LineCount = {txtBoxEditor.LineCount}");
+            //foreach (var line in textEditorLines) {
+            //    //var characters = Encoding.UTF8.GetBytes(line);
 
-            //Debug.WriteLine("count = " + count);
-            //Debug.WriteLine("lineCount = " + lineCount);
+            //    //foreach (byte b in characters) {
+            //    //    System.Diagnostics.Debug.Write($"{b} ");
+            //    //}
 
-            //System.Drawing.Font f = new System.Drawing.Font(txtBoxEditor.FontFamily.Source, (float)txtBoxEditor.FontSize);
+            //    //System.Diagnostics.Debug.WriteLine("");
 
-            //for (int i = 0; i < textEditorLines.Length; i++) {
-            //    System.Diagnostics.Debug.WriteLine("Line " + (i+1) + " in textEditorLines text height: " + System.Windows.Forms.TextRenderer.MeasureText(textEditorLines[i], f).Height);
+            //    //Debug.WriteLine(BitConverter.ToString(characters));
+
+            //    //Debug.WriteLine(txtBoxEditor);
+
+            //    //Debug.WriteLine($"txtBoxEditor.GetLineIndexFromCharacterIndex(truelineCount) = {txtBoxEditor.GetLineIndexFromCharacterIndex(truelineCount)}");
+            //    //Debug.WriteLine($"txtBoxEditor.GetCharacterIndexFromLineIndex(truelineCount) = {txtBoxEditor.GetCharacterIndexFromLineIndex(truelineCount)}");
+            //    //truelineCount++;
+
+            //    Debug.WriteLine($"");
+            //}
+            //Debug.WriteLine($"trueLineCount = {truelineCount}");
+
+            //for (int i = 0; i < txtBoxEditor.LineCount; i++) {
+            //    Debug.WriteLine($"txtBoxEditor.GetCharacterIndexFromLineIndex({i}) = {txtBoxEditor.GetCharacterIndexFromLineIndex(i)}");
+            //    //Debug.WriteLine($"txtBoxEditor.GetLineIndexFromCharacterIndex({i}) = {txtBoxEditor.GetLineIndexFromCharacterIndex(i)}");
+            //    Debug.WriteLine($"txtBoxEditor.GetLineIndexFromCharacterIndex(txtBoxEditor.GetCharacterIndexFromLineIndex({i})) = {txtBoxEditor.GetLineIndexFromCharacterIndex(txtBoxEditor.GetCharacterIndexFromLineIndex(i))}");
             //}
 
-            //foreach( var line in textEditorLines ) {
-            //    var lineParts = line.Split('\r');
-            //    Debug.WriteLine("linePArts length = " + lineParts.Length);
-            //    //Debug.WriteLine(txtBoxEditor.d);
+            //Debug.WriteLine("GetLines() entered...");
+            //List<string> lines = new List<string>();
+            //var source = txtBlockEditor;
+            //var text = source.Text;
+            //int offset = 0;
+            //TextPointer lineStart = source.ContentStart.GetPositionAtOffset(1, LogicalDirection.Forward);
+            //Debug.WriteLine("lineStart = " + lineStart.);
+            //do {
+            //    TextPointer lineEnd = lineStart != null ? lineStart.GetLineStartPosition(1) : null;
+            //    Debug.WriteLine("lineEnd = " + lineEnd.);
+            //    int length = lineEnd != null ? lineStart.GetOffsetToPosition(lineEnd) : text.Length - offset;
+            //    Debug.WriteLine("length = " + length);
+            //    //yield return text.Substring(offset, length);
+            //    lines.Add(text.Substring(offset, length));
+            //    offset += length;
+            //    lineStart = lineEnd;
+            //    Debug.WriteLine("offset = " + offset);
+            //    Debug.WriteLine("lineStart = " + lineStart);
+            //} while (lineStart != null);
 
-            //    foreach () {
-            //        Debug.Write(part + "        ");
-            //    }
-
-            //    Debug.WriteLine("");
+            //Debug.WriteLine($"lines.Count = {lines.Count}");
+            //Debug.WriteLine("lines:");
+            //foreach (var line in lines) {
+            //    Debug.WriteLine("\t" + line);
             //}
 
-            //Debug.WriteLine("" + txtBoxEditor.ViewportWidth);
-            //for (int i=0;i<txtBoxEditor.LineCount;i++) {
-            //    Debug.WriteLine($"line {i+1} length = " + txtBoxEditor.GetLineLength(i));
-            //    string lineText = txtBoxEditor.GetLineText(i);
-            //    if (lineText.Length >= 3) {
-            //        string nextToLast = lineText.ElementAt(lineText.Length - 2).ToString();
-            //        string lastChar = lineText.ElementAt(lineText.Length - 1).ToString();
-            //        Debug.WriteLine($"line {i + 1} text = " + lineText + @nextToLast + @lastChar);
-            //    } else {
-            //        Debug.WriteLine($"line {i + 1} text = " + lineText);
-            //    }
+            ////Debug.WriteLine("before GetLines() called...");
+            ////var lines = GetLines(txtBlockEditor);
+            ////Debug.WriteLine("after GetLines() called...");
+            ///
+
+
+            //var textLines = txtBoxEditor.Text.Split("\n");
+            //var txtBoxText = txtBoxEditor.Text;
+            /* Debug.WriteLine("txtBoxText.IndexOf(\'\\n\') = " + txtBoxText.IndexOf('\n', txtBoxEditor.GetCharacterIndexFromLineIndex(txtBoxEditor.GetFirstVisibleLineIndex())));
+            Debug.WriteLine("first index for next line = " + (txtBoxText.IndexOf('\n', txtBoxEditor.GetCharacterIndexFromLineIndex(txtBoxEditor.GetFirstVisibleLineIndex())) + 1));
+            var txtBoxtTextSubstring = txtBoxText.Substring(0, txtBoxText.IndexOf('\n', txtBoxEditor.GetCharacterIndexFromLineIndex(txtBoxEditor.GetFirstVisibleLineIndex())));
+            var txtSubstringLines = txtBoxtTextSubstring.Split('\n');
+            Debug.WriteLine("line number for first line = " + (txtSubstringLines.Length - 1));  //remove '- 1' to get display line number
+            //Debug.WriteLine("char index for line 1 = " + txtBoxEditor.GetCharacterIndexFromLineIndex(2));
+            //var tBlockLineHeight = TextBlock.GetLineHeight(txtBoxEditor);
+            //Debug.WriteLine($"TextBlock.GetLineHeight(txtBoxEditor) = {tBlockLineHeight}"); */
+
+            //Debug.WriteLine("First visible line index = " + txtBoxEditor.GetFirstVisibleLineIndex());
+            //Debug.WriteLine("Last visible line index = " + txtBoxEditor.GetLastVisibleLineIndex());
+            //Debug.WriteLine("character index from first visible line = " + txtBoxEditor.GetCharacterIndexFromLineIndex(txtBoxEditor.GetFirstVisibleLineIndex()));
+            //Debug.WriteLine("character index from second visible line = " + txtBoxEditor.GetCharacterIndexFromLineIndex(txtBoxEditor.GetFirstVisibleLineIndex() + 1));
+            //Debug.WriteLine(txtBoxEditor.GetFirstVisibleLineIndex());
+
+            /*
+            var txtBoxText = txtBoxEditor.Text;
+            var firstVisibleLineIndex = txtBoxEditor.GetFirstVisibleLineIndex();
+            var lastVisibleLineIndex = txtBoxEditor.GetLastVisibleLineIndex();
+            //var firstVisibleLineCharacterIndex = txtBoxEditor.GetCharacterIndexFromLineIndex(firstVisibleLineIndex);
+            //var lastVisibleLineCharacterIndex = txtBoxEditor.GetCharacterIndexFromLineIndex(lastVisibleLineIndex);
+
+            List<string> lineNums = new();
+            for (int i = firstVisibleLineIndex; i <= lastVisibleLineIndex; i++) {
+                Debug.WriteLine("line at index " + i + ":");
+                int currentLineCharIndex = txtBoxEditor.GetCharacterIndexFromLineIndex(i);
+                Debug.WriteLine("\tcurrent line character index = " + currentLineCharIndex);
+                string textToCurrentLineCharIndex = txtBoxText.Substring(0, currentLineCharIndex);
+                var lines = textToCurrentLineCharIndex.Split('\n');
+                Debug.WriteLine("\tarray length for substring from character index 0 to " + currentLineCharIndex + " = " + lines.Length);
+
+                Debug.WriteLine("\tlineNums contains split substring array length = " + lineNums.Contains(lines.Length.ToString()));
+                if (lineNums.Contains(lines.Length.ToString()) == false)
+                    lineNums.Add(lines.Length.ToString());
+                else
+                    lineNums.Add(string.Empty);
+            }
+
+            Debug.WriteLine("calculated line numbers:");
+            foreach (var s in lineNums) {
+                Debug.WriteLine("\t" + s);
+            }
+            Debug.WriteLine("---------------------------------------------------------------------------------------------------------");
+            */
+
+            List<int> ints = new List<int>();
+            for (int i=0; i<=20;  i++) {
+                ints.Add(i);
+            }
+            Debug.WriteLine("List ints contains 3:  " + ints.Contains(3));
+            Debug.WriteLine("List ints contains 12: " + ints.Contains(12));
+            Debug.WriteLine("List ints contains 20: " + ints.Contains(20));
+            Debug.WriteLine("List ints contains -5: " + ints.Contains(-5));
+            Debug.WriteLine("List ints contains 21: " + ints.Contains(21));
+
+            //Debug.WriteLine($"");
+            //for(int i=0;i<txtBoxEditor.LineCount;i++) {
+            //    Debug.WriteLine($"character index for line {i} = {txtBoxEditor.GetCharacterIndexFromLineIndex(i)} with length of {txtBoxEditor.GetLineLength(i)}");
             //}
-
-            //// Set up string. 
-            //string measureString = "Measure String";
-            //Font stringFont = new Font("Arial", 16);
-
-            //// Measure string.
-            //SizeF stringSize = new SizeF();
-            //stringSize = e.Graphics.MeasureString(measureString, stringFont);
-
-            //// Draw rectangle representing size of string.
-            //e.Graphics.DrawRectangle(new Pen(Color.Red, 1), 0.0F, 0.0F, stringSize.Width, stringSize.Height);
-
-            //// Draw string to screen.
-            //e.Graphics.DrawString(measureString, stringFont, Brushes.Black, new PointF(0, 0));
-
-            //txtBoxEditor.Text = "fdsa\rfdsa\rfdsa\rfdsa\rfdsa\rfdsa\rfdsa\rfdsa";
+            //txtBoxEditor.TextWrapping = TextWrapping.NoWrap;
+            //Debug.WriteLine("");
+            //for (int i = 0; i < txtBoxEditor.LineCount; i++) {
+            //    Debug.WriteLine($"character index for line {i} = {txtBoxEditor.GetCharacterIndexFromLineIndex(i)} with length of {txtBoxEditor.GetLineLength(i)}");
+            //}
+            //txtBoxEditor.TextWrapping = TextWrapping.Wrap;
         }
+
+        //public static IEnumerable<string> GetLines(this TextBlock source) {
+        //    Debug.WriteLine("GetLines() entered...");
+        //    //var source = txtBlockEditor;
+        //    var text = source.Text;
+        //    int offset = 0;
+        //    TextPointer lineStart = source.ContentStart.GetPositionAtOffset(1, LogicalDirection.Forward);
+        //    Debug.WriteLine("lineStart = " + lineStart);
+        //    do {
+        //        TextPointer lineEnd = lineStart != null ? lineStart.GetLineStartPosition(1) : null;
+        //        Debug.WriteLine("lineEnd = " + lineEnd);
+        //        int length = lineEnd != null ? lineStart.GetOffsetToPosition(lineEnd) : text.Length - offset;
+        //        Debug.WriteLine("length = " + length);
+        //        yield return text.Substring(offset, length);
+        //        offset += length;
+        //        lineStart = lineEnd;
+        //        Debug.WriteLine("offset = " + offset);
+        //        Debug.WriteLine("lineStart = " + lineStart);
+        //    } while (lineStart != null);
+        //}
 
         private void PART_HorizontalScrollBar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
             if (e.NewValue.Equals(true)) {
@@ -466,6 +603,8 @@ namespace TextEditor {
         }
 
         private void txtBoxEditor_SelectionChanged(object sender, RoutedEventArgs e) {
+            Stopwatch sw = new();
+            sw.Start();
             //Debug.WriteLine("txtBoxEditor_SelectionChanged called...\ntxtBoxEditor.CaretIndex = " + txtBoxEditor.CaretIndex);
 
             int caretVerticalPosition = 0, caretHorizontalPosition = txtBoxEditor.CaretIndex;
@@ -480,6 +619,8 @@ namespace TextEditor {
             caretHorizontalPosition = textLines[textLines.Length - 1].Length;
 
             statusBarLabelCaretPos.Content = $"LN: {caretVerticalPosition}  Ch: {caretHorizontalPosition + 1}";
+            sw.Stop();
+            Debug.WriteLine("Stopwatch in milliseconds/seconds = " + sw.ElapsedMilliseconds + "/" + Convert.ToDouble(sw.ElapsedMilliseconds / 1000));
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {

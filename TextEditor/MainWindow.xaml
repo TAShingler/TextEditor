@@ -1179,7 +1179,7 @@
                              Padding="5,0" 
                              BorderThickness="0,0,0,0"
                              IsReadOnly="True" 
-                             Cursor="Resources\MirroredArrow.cur"
+                             Cursor="\Resources\MirroredArrow.cur"
                              Visibility="Visible"
                              MouseEnter="txtBlockLineNums_MouseEnter" 
                              MouseLeave="txtBlockLineNums_MouseLeave" />
@@ -1188,8 +1188,21 @@
                                Height="18"
                                Background="{DynamicResource AppSecondaryColor}"/>
                 </Grid>
+                <TextBlock Name="txtBlockEditor"
+                           Grid.Column="1"
+                           Panel.ZIndex="0"
+                           Padding="{Binding ElementName=txtBoxEditor,
+                                             Path=Padding}"
+                           Foreground="{StaticResource AppTextColor}"
+                           Background="{StaticResource AppPrimaryColorAlt}" 
+                           Text="{Binding ElementName=txtBoxEditor,
+                                          Path=Text}"
+                           TextWrapping="{Binding ElementName=txtBoxEditor,
+                                                  Path=TextWrapping}"
+                           Visibility="Collapsed"/>
                 <TextBox Grid.Column="1"
-                         x:Name="txtBoxEditor" 
+                         x:Name="txtBoxEditor"
+                         Panel.ZIndex="1"
                          HorizontalScrollBarVisibility="Auto" 
                          VerticalScrollBarVisibility="Auto" 
                          AcceptsReturn="True" 
@@ -1197,15 +1210,16 @@
                          ScrollViewer.ScrollChanged="TextBox_ScrollChanged"
                          Foreground="{StaticResource AppTextColor}"
                          Background="{StaticResource AppPrimaryColorAlt}" 
+                         CaretBrush="{StaticResource AppTextColor}"
                          BorderThickness="0,0,0,0" 
                          TextChanged="SetUpLines"
                          Padding="2" 
-                         TextWrapping="Wrap"
+                         TextWrapping="NoWrap"
                          Style="{DynamicResource NumberedLineTextBoxStyle}" SelectionChanged="txtBoxEditor_SelectionChanged">
-                    <TextBox.Resources>
+                    <!--<TextBox.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
                                          Color="#FF333333" />
-                    </TextBox.Resources>
+                    </TextBox.Resources>-->
                 </TextBox>
             </Grid>
         </DockPanel>
